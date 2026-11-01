@@ -1,11 +1,15 @@
 # SentioGate JavaScript / TypeScript SDK (`@sentiogate/sdk`)
 
-[![npm version](https://img.shields.io/npm/v/@sentiogate/sdk?style=flat-square&color=blue)](https://www.npmjs.com/package/@sentiogate/sdk)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
-[![Website](https://img.shields.io/badge/Website-sentiogate.app-2563eb?style=flat-square)](https://sentiogate.app)
-[![Live Benchmarks](https://img.shields.io/badge/Benchmarks-Live_Latency-7c3aed?style=flat-square)](https://sentiogate.app/benchmarks)
+[![npm version](https://img.shields.io/npm/v/@sentiogate/sdk?style=for-the-badge&color=cb3837&logo=npm)](https://www.npmjs.com/package/@sentiogate/sdk)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
+[![Website](https://img.shields.io/badge/Website-sentiogate.app-2563eb?style=for-the-badge&logo=google-chrome&logoColor=white)](https://sentiogate.app)
+[![Live Benchmarks](https://img.shields.io/badge/Benchmarks-Live_Latency-7c3aed?style=for-the-badge&logo=speedtest&logoColor=white)](https://sentiogate.app/benchmarks)
 
-Lightweight, zero-dependency client SDK for [SentioGate](https://sentiogate.app) — the zero-markup, intelligent AI LLM router that dynamically directs requests across OpenAI, Anthropic, Gemini, DeepSeek, and Groq with sub-20ms overhead.
+Lightweight, zero-dependency client SDK for [SentioGate](https://sentiogate.app) — the zero-markup, intelligent AI LLM router that dynamically directs requests across OpenAI, Anthropic, Gemini, DeepSeek, and Groq with sub-20ms routing overhead.
+
+* 📦 **NPM Package**: [`https://www.npmjs.com/package/@sentiogate/sdk`](https://www.npmjs.com/package/@sentiogate/sdk)
+* 🐍 **Python SDK**: [`https://pypi.org/project/sentiogate/`](https://pypi.org/project/sentiogate/)
+* 🌐 **Developer Hub & Simulator**: [`https://sentiogate.github.io`](https://sentiogate.github.io)
 
 ---
 
@@ -20,6 +24,9 @@ pnpm add @sentiogate/sdk
 
 # yarn
 yarn add @sentiogate/sdk
+
+# bun
+bun add @sentiogate/sdk
 ```
 
 ---
@@ -27,20 +34,15 @@ yarn add @sentiogate/sdk
 ## 🚀 Quickstart
 
 ```typescript
-import { SentioGate } from "@sentiogate/sdk";
+import { AutoRouter } from "@sentiogate/sdk";
 
-const gate = new SentioGate({
+const router = new AutoRouter({
   apiKey: process.env.SENTIOGATE_API_KEY,
-  // Optional: Supply your own keys for zero-markup BYOK routing
-  providerKeys: {
-    openai: process.env.OPENAI_API_KEY,
-    anthropic: process.env.ANTHROPIC_API_KEY,
-  }
 });
 
 // Basic Chat Completion
-const response = await gate.chat.completions.create({
-  model: "auto:fastest", // Automatically routes to the lowest-latency model
+const response = await router.createChatCompletion({
+  model: "auto:fastest", // Automatically routes to lowest-latency model replica
   messages: [
     { role: "system", content: "You are a concise engineering assistant." },
     { role: "user", content: "Explain vector embeddings in 1 sentence." }
@@ -55,10 +57,9 @@ console.log(response.choices[0].message.content);
 ## 🌊 Streaming Completions
 
 ```typescript
-const stream = await gate.chat.completions.create({
+const stream = await router.streamChatCompletion({
   model: "auto:cost-efficient",
   messages: [{ role: "user", content: "Write a quicksort implementation in TypeScript." }],
-  stream: true,
 });
 
 for await (const chunk of stream) {
@@ -70,7 +71,7 @@ for await (const chunk of stream) {
 
 ## 🛠️ Key Capabilities
 
-* **Zero Markup**: True BYOK architecture. No hidden fee per token.
+* **0% Token Markup**: Pure Bring-Your-Own-Key (BYOK) architecture. No hidden fee per token.
 * **Auto Routing Tags**:
   * `auto:fastest`: Routes to the replica with lowest Time-To-First-Token (TTFT).
   * `auto:cost-efficient`: Routes to highest quality model under your cost ceiling.
@@ -82,8 +83,8 @@ for await (const chunk of stream) {
 
 ## 🔗 Useful Links
 
-* 🏠 [SentioGate Website](https://sentiogate.app)
+* 🏠 [SentioGate Official Site](https://sentiogate.app)
 * 📖 [Full API Documentation](https://sentiogate.app/docs)
 * 📊 [Live Latency Benchmarks](https://sentiogate.app/benchmarks)
 * ⚖️ [SentioGate vs LiteLLM & OpenRouter](https://sentiogate.app/compare)
-* 🐍 [Python SDK](https://github.com/SentioGate/sentiogate-python)
+* 🐍 [Python SDK on PyPI](https://pypi.org/project/sentiogate/)
