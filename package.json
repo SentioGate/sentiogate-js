@@ -1,0 +1,51 @@
+{
+  "name": "@sentiogate/sdk",
+  "version": "1.2.0",
+  "description": "Official TypeScript & JavaScript client SDK for SentioGate intelligent LLM router",
+  "type": "module",
+  "main": "./src/index.cjs",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "require": "./src/index.cjs",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SentioGate/sentiogate-js.git"
+  },
+  "homepage": "https://sentiogate.app",
+  "bugs": {
+    "url": "https://github.com/SentioGate/sentiogate-js/issues"
+  },
+  "keywords": [
+    "sentiogate",
+    "ai",
+    "router",
+    "llm-gateway",
+    "byok",
+    "llm",
+    "openai",
+    "anthropic",
+    "gemini",
+    "deepseek",
+    "groq",
+    "failover",
+    "latency-routing"
+  ],
+  "author": "SentioGate Team <dev@sentiogate.app>",
+  "license": "Apache-2.0"
+}
