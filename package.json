@@ -1,6 +1,6 @@
 {
   "name": "@sentiogate/sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Official TypeScript & JavaScript client SDK for SentioGate intelligent LLM router",
   "type": "module",
   "main": "./src/index.cjs",
@@ -47,5 +47,6 @@
     "latency-routing"
   ],
   "author": "SentioGate Team <dev@sentiogate.app>",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "readmeFilename": "README.md"
 }
