@@ -8,7 +8,7 @@
 Lightweight, zero-dependency client SDK for [SentioGate](https://sentiogate.app) — the zero-markup, intelligent AI LLM router that dynamically directs requests across OpenAI, Anthropic, Gemini, DeepSeek, and Groq with sub-20ms routing overhead.
 
 * 📦 **NPM Package**: [`https://www.npmjs.com/package/@sentiogate/sdk`](https://www.npmjs.com/package/@sentiogate/sdk)
-* 🐍 **Python SDK**: [`https://pypi.org/project/sentiogate/`](https://pypi.org/project/sentiogate/)
+* 🐍 **Python SDK**: [`https://pypi.org/project/sentiogate-python/`](https://pypi.org/project/sentiogate-python/)
 * 🌐 **Developer Hub & Simulator**: [`https://sentiogate.github.io`](https://sentiogate.github.io)
 
 ---
@@ -87,4 +87,4 @@ for await (const chunk of stream) {
 * 📖 [Full API Documentation](https://sentiogate.app/docs)
 * 📊 [Live Latency Benchmarks](https://sentiogate.app/benchmarks)
 * ⚖️ [SentioGate vs LiteLLM & OpenRouter](https://sentiogate.app/compare)
-* 🐍 [Python SDK on PyPI](https://pypi.org/project/sentiogate/)
+* 🐍 [Python SDK on PyPI](https://pypi.org/project/sentiogate-python/)
