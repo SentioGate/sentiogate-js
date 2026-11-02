@@ -291,7 +291,7 @@ export class AutoRouter {
    */
   async pollBatch(jobId) {
     const cleanId = String(jobId || '').replace(/^\/api\/batch\/poll\//, '').replace(/^\/v1\/batch\/poll\//, '');
-    const url = `${this.baseUrl}/v1/batch/poll/${cleanId}`;
+    const url = `${this.baseUrl}/v1/batch/poll/${encodeURIComponent(cleanId)}`;
     const res = await fetch(url, {
       method: 'GET',
       headers: this._headers(),
@@ -364,7 +364,7 @@ export class AutoRouter {
    * @returns {Promise<Object>}
    */
   async getSessionHandoff(sessionId) {
-    const url = `${this.baseUrl}/v1/sessions/${sessionId}/handoff`;
+    const url = `${this.baseUrl}/v1/sessions/${encodeURIComponent(sessionId)}/handoff`;
     const res = await fetch(url, { method: 'GET', headers: this._headers() });
     if (!res.ok) throw new RouterClientError(`Get session handoff failed: ${res.status}`);
     return await res.json();
@@ -380,7 +380,7 @@ export class AutoRouter {
    * @returns {Promise<Object>}
    */
   async compactSession({ sessionId, messages, userId = 'default_user' }) {
-    const url = `${this.baseUrl}/v1/sessions/${sessionId}/compact`;
+    const url = `${this.baseUrl}/v1/sessions/${encodeURIComponent(sessionId)}/compact`;
     const res = await fetch(url, {
       method: 'POST',
       headers: this._headers(),
@@ -561,7 +561,6 @@ export class AutoRouter {
     return await res.json();
   }
 }
-
 
 
 

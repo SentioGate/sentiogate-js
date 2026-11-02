@@ -71,3 +71,25 @@ test('AutoRouter enqueueBatch and pollBatch call appropriate endpoints', async (
   }
 });
 
+test('path identifiers are encoded as single URL segments', async () => {
+  const urls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    urls.push(url);
+    return new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+
+  try {
+    const router = new AutoRouter({ baseUrl: 'https://api.test.com' });
+    await router.pollBatch('job/with space');
+    await router.getSessionHandoff('session/with space');
+    await router.compactSession({ sessionId: 'session/with space', messages: [] });
+    assert.deepEqual(urls, [
+      'https://api.test.com/v1/batch/poll/job%2Fwith%20space',
+      'https://api.test.com/v1/sessions/session%2Fwith%20space/handoff',
+      'https://api.test.com/v1/sessions/session%2Fwith%20space/compact',
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
