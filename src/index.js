@@ -4,7 +4,7 @@
  * Direct, lightweight client that brings your own keys to the AI Auto Router gateway.
  */
 
-export const VERSION = '1.2.1';
+export const VERSION = '1.2.2';
 /** Sent from Node / server runtimes only (browsers control their own User-Agent). */
 export const USER_AGENT = `ai-auto-router-sdk-js/${VERSION} (+https://sentiogate.app)`;
 /** 429 codes worth retrying after Retry-After; quota codes (community_pool_exhausted, monthly_request_limit) are not. */
