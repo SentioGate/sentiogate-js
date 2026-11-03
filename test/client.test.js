@@ -93,3 +93,26 @@ test('path identifiers are encoded as single URL segments', async () => {
     globalThis.fetch = originalFetch;
   }
 });
+
+test('internal / web-app-only methods are not part of the public client', () => {
+  const router = new AutoRouter();
+  for (const name of ['getClusterHealth', 'broadcastClusterBreaker', 'getEdgeStatus', 'verifyTurnstile']) {
+    assert.equal(typeof router[name], 'undefined', `${name} should not exist`);
+  }
+});
+
+test('clearCache flushes only the caller\'s cache (no user_id parameter)', async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => {
+    calls.push({ url, method: opts.method });
+    return new Response('{"status":"cleared"}', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+  try {
+    const router = new AutoRouter({ baseUrl: 'https://api.test.com' });
+    await router.clearCache('someone_else');
+    assert.deepEqual(calls, [{ url: 'https://api.test.com/v1/cache', method: 'DELETE' }]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

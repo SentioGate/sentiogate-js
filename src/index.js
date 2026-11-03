@@ -1,12 +1,12 @@
 /**
- * AI Auto Router JavaScript / TypeScript Client SDK.
+ * SentioGate JavaScript / TypeScript Client SDK (@sentiogate/sdk).
  *
- * Direct, lightweight client that brings your own keys to the AI Auto Router gateway.
+ * Direct, lightweight client that brings your own keys to the SentioGate gateway.
  */
 
 export const VERSION = '1.2.2';
 /** Sent from Node / server runtimes only (browsers control their own User-Agent). */
-export const USER_AGENT = `ai-auto-router-sdk-js/${VERSION} (+https://sentiogate.app)`;
+export const USER_AGENT = `sentiogate-js/${VERSION} (+https://sentiogate.app)`;
 /** 429 codes worth retrying after Retry-After; quota codes (community_pool_exhausted, monthly_request_limit) are not. */
 export const RETRYABLE_CODES = Object.freeze(['upstream_rate_limited', 'rate_limited', 'upstream_circuit_open']);
 const IS_BROWSER = typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -57,9 +57,9 @@ async function errorFrom(res, prefix) {
   );
 }
 
-/** Production SentioGate API (DEC-043). The client appends /v1/... itself, so this is host-only. */
+/** Hosted SentioGate API. The client appends /v1/... itself, so this is host-only. */
 export const DEFAULT_BASE_URL = 'https://api.sentiogate.dev';
-/** Default request timeout: above the server's 120 s single-attempt deadline for community-pool calls. */
+/** Default request timeout (130 s), generous enough for long-running requests. */
 export const DEFAULT_TIMEOUT_MS = 130000;
 
 export class AutoRouter {
@@ -67,9 +67,9 @@ export class AutoRouter {
    * @param {Object} options
    * @param {string} [options.baseUrl='https://api.sentiogate.dev'] Host only; use e.g. 'http://localhost:8000' for a self-hosted router.
    * @param {string} [options.apiKey]
-   * @param {number} [options.timeout=130000] Milliseconds. Community-pool answers can take up to the server's 120 s deadline.
+   * @param {number} [options.timeout=130000] Milliseconds. Leaves room for long-running requests.
    * @param {number} [options.maxRetries=0] Opt-in: retry transient 429s after the server's Retry-After.
-   * @param {number} [options.maxRetryWaitMs=60000] Never wait longer than this (the community pool can ask for 15 min).
+   * @param {number} [options.maxRetryWaitMs=60000] Never wait longer than this (the server may ask you to wait via Retry-After).
    * @param {string} [options.userAgent] Node / server runtimes only.
    */
   constructor(options = {}) {
@@ -433,7 +433,7 @@ export class AutoRouter {
   }
 
   /**
-   * Fetch router cache statistics and entry counts.
+   * Fetch cache statistics for your account.
    * @returns {Promise<Object>}
    */
   async getCacheStats() {
@@ -444,51 +444,13 @@ export class AutoRouter {
   }
 
   /**
-   * Flush cache entries.
-   * @param {string} [userId]
+   * Flush your own cached responses (the signed-in account's cache).
    * @returns {Promise<Object>}
    */
-  async clearCache(userId = null) {
-    const url = `${this.baseUrl}/v1/cache${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`;
+  async clearCache() {
+    const url = `${this.baseUrl}/v1/cache`;
     const res = await fetch(url, { method: 'DELETE', headers: this._headers() });
     if (!res.ok) throw new RouterClientError(`Clear cache failed: ${res.status}`);
-    return await res.json();
-  }
-
-  /**
-   * Compatibility only: cluster status is not available on the hosted gateway (answers `{ accepted: false }`).
-   * Use GET /health for liveness.
-   * @returns {Promise<Object>}
-   */
-  async getClusterHealth() {
-    const url = `${this.baseUrl}/v1/cluster/health`;
-    const res = await fetch(url, { method: 'GET', headers: this._headers() });
-    if (!res.ok) throw new RouterClientError(`Fetch cluster health failed: ${res.status}`);
-    return await res.json();
-  }
-
-  /**
-   * Compatibility only: manual breaker control is not available on the hosted gateway (answers `{ accepted: false }`).
-   * @param {Object} params
-   * @param {string} params.provider
-   * @param {string} [params.reason='manual_override']
-   * @param {number} [params.errorRate=1.0]
-   * @param {number} [params.ttlSeconds=60.0]
-   * @returns {Promise<Object>}
-   */
-  async broadcastClusterBreaker({ provider, reason = 'manual_override', errorRate = 1.0, ttlSeconds = 60.0 }) {
-    const url = `${this.baseUrl}/v1/cluster/breakers`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: this._headers(),
-      body: JSON.stringify({
-        provider,
-        reason,
-        error_rate: errorRate,
-        ttl_seconds: ttlSeconds,
-      }),
-    });
-    if (!res.ok) throw new RouterClientError(`Broadcast cluster breaker failed: ${res.status}`);
     return await res.json();
   }
 
@@ -504,7 +466,7 @@ export class AutoRouter {
   }
 
   /**
-   * Redeem AppSumo / lifetime license voucher code.
+   * Redeem a license code for the signed-in account.
    * @param {Object} params
    * @param {string} params.code
    * @param {string} [params.userId='default_user']
@@ -532,36 +494,4 @@ export class AutoRouter {
     if (!res.ok) throw new RouterClientError(`Fetch user license failed: ${res.status}`);
     return await res.json();
   }
-
-  /**
-   * Fetch Cloudflare Edge shield status and network configuration.
-   * @returns {Promise<Object>}
-   */
-  async getEdgeStatus() {
-    const url = `${this.baseUrl}/v1/edge/status`;
-    const res = await fetch(url, { method: 'GET', headers: this._headers() });
-    if (!res.ok) throw new RouterClientError(`Fetch edge status failed: ${res.status}`);
-    return await res.json();
-  }
-
-  /**
-   * Verify Cloudflare Turnstile token via backend verification.
-   * @param {Object} params
-   * @param {string} params.token
-   * @returns {Promise<Object>}
-   */
-  async verifyTurnstile({ token }) {
-    const url = `${this.baseUrl}/v1/edge/turnstile/verify`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: this._headers(),
-      body: JSON.stringify({ token }),
-    });
-    if (!res.ok) throw new RouterClientError(`Verify turnstile failed: ${res.status}`);
-    return await res.json();
-  }
 }
-
-
-
-

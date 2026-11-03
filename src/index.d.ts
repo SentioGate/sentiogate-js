@@ -1,6 +1,6 @@
 /**
- * TypeScript Type Definitions for @hushamdev/ai-auto-router-sdk
- * Zero-markup BYOK client SDK for AI Auto Router.
+ * TypeScript Type Definitions for @sentiogate/sdk
+ * Zero-markup BYOK client SDK for SentioGate.
  */
 
 export interface ChatMessage {
@@ -12,11 +12,11 @@ export interface ChatMessage {
 export interface AutoRouterOptions {
   baseUrl?: string;
   apiKey?: string | null;
-  /** Milliseconds; default 130000 (the server allows community-pool calls up to 120 s). */
+  /** Milliseconds; default 130000, generous enough for long-running requests. */
   timeout?: number;
   /** Opt-in (default 0): retry transient 429s after the server's Retry-After. */
   maxRetries?: number;
-  /** Never wait longer than this for a retry (default 60000 ms; the community pool can ask for 15 min). */
+  /** Never wait longer than this for a retry (default 60000 ms; the server may ask you to wait via Retry-After). */
   maxRetryWaitMs?: number;
   /** Node / server runtimes only; browsers control their own User-Agent. */
   userAgent?: string;
@@ -115,13 +115,6 @@ export interface CustomProviderParams {
   user_id?: string;
 }
 
-export interface ClusterBreakerParams {
-  provider: string;
-  reason?: string;
-  errorRate?: number;
-  ttlSeconds?: number;
-}
-
 export declare class RouterClientError extends Error {
   statusCode: number | null;
   responseBody: any;
@@ -172,14 +165,11 @@ export declare class AutoRouter {
   registerCustomProvider(params: CustomProviderParams): Promise<Record<string, any>>;
   deleteCustomProvider(providerId: string, userId?: string): Promise<Record<string, any>>;
   getCacheStats(): Promise<Record<string, any>>;
-  clearCache(userId?: string | null): Promise<Record<string, any>>;
-  getClusterHealth(): Promise<Record<string, any>>;
-  broadcastClusterBreaker(params: ClusterBreakerParams): Promise<Record<string, any>>;
+  /** Flushes the signed-in account's own cache. */
+  clearCache(): Promise<Record<string, any>>;
   getCapacityPool(): Promise<Record<string, any>>;
   redeemLicense(params: { code: string; userId?: string }): Promise<Record<string, any>>;
   getUserLicense(userId?: string): Promise<Record<string, any>>;
-  getEdgeStatus(): Promise<Record<string, any>>;
-  verifyTurnstile(params: { token: string }): Promise<Record<string, any>>;
 }
 
 export default AutoRouter;

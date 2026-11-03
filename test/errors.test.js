@@ -23,7 +23,7 @@ test('version, package.json and User-Agent agree; CJS wrapper exports the new na
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
   assert.equal(VERSION, pkg.version);
   assert.ok(pkg.files.includes('CHANGELOG.md'));
-  assert.equal(USER_AGENT, `ai-auto-router-sdk-js/${VERSION} (+https://sentiogate.app)`);
+  assert.equal(USER_AGENT, `sentiogate-js/${VERSION} (+https://sentiogate.app)`);
   assert.deepEqual([...RETRYABLE_CODES], ['upstream_rate_limited', 'rate_limited', 'upstream_circuit_open']);
   const src = readFileSync(new URL('../src/index.cjs', import.meta.url), 'utf8');
   for (const n of ['parseRetryAfter', 'RETRYABLE_CODES', 'VERSION', 'USER_AGENT']) assert.match(src, new RegExp(`${n}: esm\\.${n}`));
@@ -138,7 +138,7 @@ test('CommonJS entry loads (Node >= 20.19 / 22.12 require(esm))', () => {
   assert.equal(typeof cjs.AutoRouter, 'function'); assert.equal(typeof cjs.parseRetryAfter, 'function');
 });
 
-test('default timeout 130 s (above the server 120 s community deadline); LICENSE ships', () => {
+test('default timeout 130 s (room for long-running requests); LICENSE ships', () => {
   assert.equal(DEFAULT_TIMEOUT_MS, 130000);
   assert.equal(new AutoRouter().timeout, 130000);
   assert.equal(new AutoRouter({ timeout: 5000 }).timeout, 5000);

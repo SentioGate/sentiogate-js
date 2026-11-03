@@ -5,7 +5,7 @@
 [![Website](https://img.shields.io/badge/Website-sentiogate.app-2563eb?style=for-the-badge&logo=google-chrome&logoColor=white)](https://sentiogate.app)
 [![Live Benchmarks](https://img.shields.io/badge/Benchmarks-Live_Latency-7c3aed?style=for-the-badge&logo=speedtest&logoColor=white)](https://sentiogate.app/benchmarks)
 
-Lightweight, zero-dependency client SDK for [SentioGate](https://sentiogate.app) — the zero-markup, intelligent AI LLM router that dynamically directs requests across OpenAI, Anthropic, Gemini, DeepSeek, and Groq with sub-20ms routing overhead.
+Lightweight, zero-dependency client SDK for [SentioGate](https://sentiogate.app) — the zero-markup, OpenAI-compatible LLM router that sends each request to a suitable model across your own provider keys (OpenAI, Anthropic, Gemini, DeepSeek, Groq and more) and automatically falls back to another model if one fails.
 
 * 📦 **NPM Package**: [`https://www.npmjs.com/package/@sentiogate/sdk`](https://www.npmjs.com/package/@sentiogate/sdk)
 * 🐍 **Python SDK**: [`https://pypi.org/project/sentiogate-python/`](https://pypi.org/project/sentiogate-python/)
@@ -37,15 +37,16 @@ bun add @sentiogate/sdk
 import { AutoRouter } from "@sentiogate/sdk";
 
 const router = new AutoRouter({
+  baseUrl: "https://api.sentiogate.dev", // host only; the SDK adds /v1/...
   apiKey: process.env.SENTIOGATE_API_KEY,
 });
 
-// Basic Chat Completion
-const response = await router.createChatCompletion({
-  model: "auto:fastest", // Automatically routes to lowest-latency model replica
+// Basic chat completion: "auto" picks the cheapest suitable model
+const response = await router.chat({
+  model: "auto",
   messages: [
     { role: "system", content: "You are a concise engineering assistant." },
-    { role: "user", content: "Explain vector embeddings in 1 sentence." }
+    { role: "user", content: "Explain vector embeddings in 1 sentence." },
   ],
 });
 
@@ -57,13 +58,12 @@ console.log(response.choices[0].message.content);
 ## 🌊 Streaming Completions
 
 ```typescript
-const stream = await router.streamChatCompletion({
-  model: "auto:cost-efficient",
+for await (const chunk of router.streamChat({
+  model: "auto",
   messages: [{ role: "user", content: "Write a quicksort implementation in TypeScript." }],
-});
-
-for await (const chunk of stream) {
-  process.stdout.write(chunk.choices[0]?.delta?.content || "");
+  extraBody: { route_preference: "latency" }, // "cost" (default), "quality" or "latency"
+})) {
+  process.stdout.write(chunk.choices?.[0]?.delta?.content || "");
 }
 ```
 
@@ -71,13 +71,12 @@ for await (const chunk of stream) {
 
 ## 🛠️ Key Capabilities
 
-* **0% Token Markup**: Pure Bring-Your-Own-Key (BYOK) architecture. No hidden fee per token.
-* **Auto Routing Tags**:
-  * `auto:fastest`: Routes to the replica with lowest Time-To-First-Token (TTFT).
-  * `auto:cost-efficient`: Routes to highest quality model under your cost ceiling.
-  * `auto:reliable`: Prioritizes 99.99% uptime with immediate circuit-breaker failover.
-* **OpenAI Drop-In Compatibility**: Supports function calling, structured JSON output, tool use, and standard parameters.
-* **Multi-Environment Support**: Works seamlessly in Node.js 18+, Bun, Deno, Cloudflare Workers, and modern browser environments.
+* **0% Token Markup**: Bring-Your-Own-Key (BYOK). You pay your providers directly; SentioGate adds no fee per token.
+* **Automatic routing**: send `model: "auto"` and set `route_preference` (via `extraBody`) to `cost` (default), `quality` or `latency`. You can also request a specific `provider/model`.
+* **Fallback**: SentioGate automatically falls back to another model if one fails.
+* **Structured errors and opt-in retries**: `RouterClientError` exposes `code`, `retryAfter` and `retryable`; set `maxRetries` to retry transient 429s after the server's Retry-After.
+* **OpenAI-compatible**: pass extra OpenAI-style parameters through `extraBody`.
+* **Multi-Environment Support**: Node.js 18+, Bun, Deno, edge runtimes and modern browsers.
 
 ---
 
