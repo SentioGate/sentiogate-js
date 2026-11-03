@@ -4,7 +4,7 @@
  * Direct, lightweight client that brings your own keys to the SentioGate gateway.
  */
 
-export const VERSION = '1.2.2';
+export const VERSION = '1.3.0';
 /** Sent from Node / server runtimes only (browsers control their own User-Agent). */
 export const USER_AGENT = `sentiogate-js/${VERSION} (+https://sentiogate.app)`;
 /** 429 codes worth retrying after Retry-After; quota codes (community_pool_exhausted, monthly_request_limit) are not. */

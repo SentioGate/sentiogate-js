@@ -2,9 +2,9 @@
 
 > Renamed from `@hushamdev/ai-auto-router-sdk`.
 
-## Unreleased
+## 1.3.0 (2026-11-03)
 
-Breaking (suggest releasing as 1.3.0; the API is still pre-2.0):
+Breaking:
 - Removed `getClusterHealth()` and `broadcastClusterBreaker()` and the `ClusterBreakerParams` type. Cluster
   coordination is not part of the hosted gateway (these always answered `accepted: false`).
 - Removed `getEdgeStatus()` and `verifyTurnstile()`. They served the SentioGate web app's sign-in page, not API users.
