@@ -9,5 +9,6 @@ module.exports = {
   USER_AGENT: esm.USER_AGENT,
   RETRYABLE_CODES: esm.RETRYABLE_CODES,
   parseRetryAfter: esm.parseRetryAfter,
+  validateBaseUrl: esm.validateBaseUrl,
   default: esm.AutoRouter,
 };

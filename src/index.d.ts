@@ -134,6 +134,8 @@ export declare const USER_AGENT: string;
 export declare const RETRYABLE_CODES: readonly string[];
 /** Retry-After header -> seconds (delta-seconds or HTTP-date), or null. */
 export declare function parseRetryAfter(value: string | null | undefined, now?: number): number | null;
+/** Validates and normalizes client baseUrl to ensure safe HTTP/HTTPS protocol scheme. */
+export declare function validateBaseUrl(url?: string | null): string;
 
 export declare const DEFAULT_BASE_URL: 'https://api.sentiogate.dev';
 /** 130000 ms. */

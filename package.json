@@ -1,6 +1,6 @@
 {
   "name": "@sentiogate/sdk",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Official TypeScript & JavaScript client SDK for SentioGate intelligent LLM router",
   "type": "module",
   "main": "./src/index.cjs",

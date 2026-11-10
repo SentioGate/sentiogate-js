@@ -4,7 +4,7 @@
  * Direct, lightweight client that brings your own keys to the SentioGate gateway.
  */
 
-export const VERSION = '1.3.0';
+export const VERSION = '1.3.1';
 /** Sent from Node / server runtimes only (browsers control their own User-Agent). */
 export const USER_AGENT = `sentiogate-js/${VERSION} (+https://sentiogate.app)`;
 /** 429 codes worth retrying after Retry-After; quota codes (community_pool_exhausted, monthly_request_limit) are not. */
@@ -62,6 +62,21 @@ export const DEFAULT_BASE_URL = 'https://api.sentiogate.dev';
 /** Default request timeout (130 s), generous enough for long-running requests. */
 export const DEFAULT_TIMEOUT_MS = 130000;
 
+/** Validates and normalizes client baseUrl to ensure safe protocol scheme. */
+export function validateBaseUrl(url) {
+  const target = String(url || DEFAULT_BASE_URL).trim();
+  let parsed;
+  try {
+    parsed = new URL(target);
+  } catch (err) {
+    throw new TypeError(`Invalid baseUrl "${target}": ${err.message}`);
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new TypeError(`Invalid baseUrl protocol "${parsed.protocol}". Only "http:" and "https:" are allowed.`);
+  }
+  return target.replace(/\/$/, '');
+}
+
 export class AutoRouter {
   /**
    * @param {Object} options
@@ -73,7 +88,7 @@ export class AutoRouter {
    * @param {string} [options.userAgent] Node / server runtimes only.
    */
   constructor(options = {}) {
-    this.baseUrl = (options.baseUrl || DEFAULT_BASE_URL).replace(/\/$/, '');
+    this.baseUrl = validateBaseUrl(options.baseUrl);
     this.apiKey = options.apiKey || null;
     this.timeout = options.timeout || DEFAULT_TIMEOUT_MS;
     this.maxRetries = Math.max(0, Math.floor(Number(options.maxRetries) || 0));

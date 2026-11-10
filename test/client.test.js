@@ -26,6 +26,21 @@ test('AutoRouter trims trailing slash and respects custom options', () => {
   assert.equal(headers['Content-Type'], 'application/json');
 });
 
+test('AutoRouter validates baseUrl scheme', () => {
+  assert.throws(
+    () => new AutoRouter({ baseUrl: 'file:///etc/passwd' }),
+    /Invalid baseUrl protocol "file:"/
+  );
+  assert.throws(
+    () => new AutoRouter({ baseUrl: 'ftp://evil.com' }),
+    /Invalid baseUrl protocol "ftp:"/
+  );
+  assert.throws(
+    () => new AutoRouter({ baseUrl: 'not-a-url' }),
+    /Invalid baseUrl "not-a-url"/
+  );
+});
+
 test('RouterClientError retains statusCode and responseBody', () => {
   const err = new RouterClientError('Unauthorized', 401, { error: 'invalid_token' });
   assert.equal(err.name, 'RouterClientError');
